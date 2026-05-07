@@ -1,0 +1,248 @@
+# Raspberry Pi Monitor — Home Assistant Dashboard
+#
+# To use: Settings → Dashboards → Add Dashboard → (name it) →
+#         Edit → Raw configuration editor → paste this YAML.
+#
+# Entity IDs assume the device was named "Raspberry Pi" (the default).
+# If you used a different name during setup, replace "raspberry_pi" with
+# your device name slug (e.g. "my_pi" → sensor.my_pi_cpu_usage).
+# Check exact IDs at: Settings → Devices & Services → Entities → filter rpi
+#
+# vcgencmd sensors (GPU temp, throttle, ARM clock) only appear if vcgencmd
+# is installed on the Pi. Remove those entities if not available.
+
+title: Raspberry Pi Monitor
+views:
+  - title: Pi Monitor
+    path: pi-monitor
+    icon: mdi:raspberry-pi
+    cards:
+
+      # ── OVERVIEW ────────────────────────────────────────────────────────────
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.raspberry_pi_cpu_usage
+            name: CPU
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 60
+              red: 85
+          - type: gauge
+            entity: sensor.raspberry_pi_ram_usage
+            name: RAM
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 70
+              red: 90
+          - type: gauge
+            entity: sensor.raspberry_pi_disk_usage
+            name: Disk
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 75
+              red: 90
+          - type: gauge
+            entity: sensor.raspberry_pi_cpu_temperature
+            name: Temp
+            unit: °C
+            min: 0
+            max: 85
+            needle: true
+            severity:
+              green: 0
+              yellow: 60
+              red: 75
+
+      # ── CPU ─────────────────────────────────────────────────────────────────
+      - type: markdown
+        content: "## CPU"
+
+      - type: history-graph
+        title: CPU Usage — Overall & Per Core
+        hours_to_show: 1
+        refresh_interval: 30
+        entities:
+          - entity: sensor.raspberry_pi_cpu_usage
+            name: Overall
+          - entity: sensor.raspberry_pi_cpu_core_0_usage
+            name: Core 0
+          - entity: sensor.raspberry_pi_cpu_core_1_usage
+            name: Core 1
+          - entity: sensor.raspberry_pi_cpu_core_2_usage
+            name: Core 2
+          - entity: sensor.raspberry_pi_cpu_core_3_usage
+            name: Core 3
+
+      - type: horizontal-stack
+        cards:
+          - type: history-graph
+            title: CPU Frequency (MHz)
+            hours_to_show: 1
+            refresh_interval: 30
+            entities:
+              - entity: sensor.raspberry_pi_cpu_frequency
+                name: psutil
+              - entity: sensor.raspberry_pi_cpu_frequency_vcgencmd
+                name: vcgencmd
+          - type: history-graph
+            title: Load Average
+            hours_to_show: 1
+            refresh_interval: 30
+            entities:
+              - entity: sensor.raspberry_pi_load_average_1_min
+                name: 1 min
+              - entity: sensor.raspberry_pi_load_average_5_min
+                name: 5 min
+              - entity: sensor.raspberry_pi_load_average_15_min
+                name: 15 min
+
+      # ── MEMORY ──────────────────────────────────────────────────────────────
+      - type: markdown
+        content: "## Memory"
+
+      - type: horizontal-stack
+        cards:
+          - type: history-graph
+            title: RAM & Swap Usage (%)
+            hours_to_show: 1
+            refresh_interval: 30
+            entities:
+              - entity: sensor.raspberry_pi_ram_usage
+                name: RAM
+              - entity: sensor.raspberry_pi_swap_usage
+                name: Swap
+          - type: history-graph
+            title: RAM Used vs Available (MB)
+            hours_to_show: 1
+            refresh_interval: 30
+            entities:
+              - entity: sensor.raspberry_pi_ram_used
+                name: Used
+              - entity: sensor.raspberry_pi_ram_available
+                name: Available
+
+      - type: entities
+        title: Memory Details
+        entities:
+          - entity: sensor.raspberry_pi_ram_total
+            name: Total RAM
+          - entity: sensor.raspberry_pi_ram_used
+            name: RAM Used
+          - entity: sensor.raspberry_pi_ram_available
+            name: RAM Available
+          - entity: sensor.raspberry_pi_swap_usage
+            name: Swap Usage
+          - entity: sensor.raspberry_pi_swap_used
+            name: Swap Used
+
+      # ── STORAGE ─────────────────────────────────────────────────────────────
+      - type: markdown
+        content: "## Storage"
+
+      - type: horizontal-stack
+        cards:
+          - type: history-graph
+            title: Disk Usage (%)
+            hours_to_show: 6
+            refresh_interval: 60
+            entities:
+              - entity: sensor.raspberry_pi_disk_usage
+                name: Usage
+          - type: entities
+            title: Storage Details
+            entities:
+              - entity: sensor.raspberry_pi_disk_total
+                name: Total
+              - entity: sensor.raspberry_pi_disk_used
+                name: Used
+              - entity: sensor.raspberry_pi_disk_free
+                name: Free
+              - entity: sensor.raspberry_pi_disk_usage
+                name: Usage %
+
+      # ── TEMPERATURE ─────────────────────────────────────────────────────────
+      - type: markdown
+        content: "## Temperature"
+
+      - type: history-graph
+        title: CPU & GPU Temperature (°C)
+        hours_to_show: 1
+        refresh_interval: 30
+        entities:
+          - entity: sensor.raspberry_pi_cpu_temperature
+            name: CPU
+          - entity: sensor.raspberry_pi_gpu_temperature
+            name: GPU
+
+      # ── NETWORK ─────────────────────────────────────────────────────────────
+      - type: markdown
+        content: "## Network"
+
+      - type: history-graph
+        title: Network Rates (MB/s)
+        hours_to_show: 1
+        refresh_interval: 30
+        entities:
+          - entity: sensor.raspberry_pi_network_upload_rate
+            name: Upload
+          - entity: sensor.raspberry_pi_network_download_rate
+            name: Download
+
+      - type: entities
+        title: Network Totals (since boot)
+        entities:
+          - entity: sensor.raspberry_pi_network_bytes_sent
+            name: Total Sent
+          - entity: sensor.raspberry_pi_network_bytes_received
+            name: Total Received
+
+      # ── SYSTEM ──────────────────────────────────────────────────────────────
+      - type: markdown
+        content: "## System"
+
+      - type: horizontal-stack
+        cards:
+          - type: history-graph
+            title: Running Processes
+            hours_to_show: 1
+            refresh_interval: 30
+            entities:
+              - entity: sensor.raspberry_pi_process_count
+                name: Processes
+          - type: entities
+            title: System Info
+            entities:
+              - entity: sensor.raspberry_pi_system_uptime
+                name: Uptime
+              - entity: sensor.raspberry_pi_last_boot
+                name: Last Boot
+              - entity: sensor.raspberry_pi_process_count
+                name: Process Count
+
+      # ── RPi DIAGNOSTICS ─────────────────────────────────────────────────────
+      - type: markdown
+        content: "## RPi Diagnostics"
+
+      - type: entities
+        title: Throttle & Voltage (requires vcgencmd)
+        entities:
+          - entity: sensor.raspberry_pi_cpu_throttled
+            name: CPU Throttled
+          - entity: sensor.raspberry_pi_undervoltage_detected
+            name: Undervoltage Now
+          - entity: sensor.raspberry_pi_undervoltage_occurred_since_boot
+            name: Undervoltage (Since Boot)
+          - entity: sensor.raspberry_pi_thermal_throttle_occurred_since_boot
+            name: Thermal Throttle (Since Boot)
+          - entity: sensor.raspberry_pi_cpu_frequency_vcgencmd
+            name: ARM Clock (MHz)
