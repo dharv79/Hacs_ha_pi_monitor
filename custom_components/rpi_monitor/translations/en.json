@@ -1,0 +1,40 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Raspberry Pi Monitor",
+        "description": "Configure local system monitoring for this Raspberry Pi.",
+        "data": {
+          "display_name": "Device display name",
+          "update_interval": "Update interval (seconds)"
+        },
+        "data_description": {
+          "display_name": "Name shown in the Home Assistant device registry",
+          "update_interval": "How often to poll system metrics (10–3600 seconds)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Update interval must be between 10 and 3600 seconds."
+    },
+    "abort": {
+      "already_configured": "Raspberry Pi Monitor is already configured. Only one instance is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Raspberry Pi Monitor Options",
+        "data": {
+          "update_interval": "Update interval (seconds)"
+        },
+        "data_description": {
+          "update_interval": "How often to poll system metrics (10–3600 seconds)"
+        }
+      }
+    },
+    "error": {
+      "invalid_interval": "Update interval must be between 10 and 3600 seconds."
+    }
+  }
+}
