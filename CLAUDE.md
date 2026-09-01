@@ -135,3 +135,11 @@ Version is set in `custom_components/rpi_monitor/manifest.json`. Use semantic ve
 
 - `main` — stable, HACS-installable
 - Feature branches → merge to `main` via PR
+
+## Code Output & Efficiency Directives
+
+- Output only modified functions or specific blocks; never rewrite entire files unless fundamentally restructuring them.
+- Do not echo back code, errors, or logs provided in the prompt.
+- Omit boilerplate, import statements, and setup code unless they are being modified.
+- Provide code edits directly without introductory or concluding explanations.
+- **Workflow Requirement:** Whenever a complex task is completed or before starting a completely new substantive task in this session, explicitly remind the user to run `/compact` to compress the chat history.

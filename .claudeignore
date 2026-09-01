@@ -1,0 +1,77 @@
+# .claudesignore — files Claude should not read or index
+
+# Git internals
+.git/
+
+# Python cache & bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Package / dependency installs
+site-packages/
+
+# Build & distribution artefacts
+build/
+dist/
+*.egg-info/
+*.egg
+wheels/
+
+# Test & coverage output
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# Type-checker caches
+.mypy_cache/
+.dmypy.json
+.pytype/
+.ruff_cache/
+
+# IDE & editor artefacts
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+
+# Lock files (large, auto-generated)
+poetry.lock
+Pipfile.lock
+requirements*.txt
+
+# Large media / binary assets (kept in brand/ but not worth indexing)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.mp4
+*.mp3
+*.zip
+*.tar.gz
+
+# Home Assistant runtime artefacts (if repo is used inside HA config dir)
+home-assistant.log
+home-assistant_v2.db
+home-assistant_v2.db-shm
+home-assistant_v2.db-wal
+.storage/
+deps/
+tts/
+www/
