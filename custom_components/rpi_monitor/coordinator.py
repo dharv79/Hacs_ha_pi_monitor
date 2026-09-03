@@ -37,6 +37,9 @@ from .const import (
     KEY_RAM_USED_MB,
     KEY_SWAP_USAGE_PCT,
     KEY_SWAP_USED_MB,
+    KEY_POWER_AMPS_IN,
+    KEY_POWER_VOLTS_IN,
+    KEY_POWER_WATTS,
     KEY_TEMP_CPU,
     KEY_TEMP_GPU,
     KEY_THERMAL_THROTTLE_OCCURRED,
@@ -189,6 +192,9 @@ class RpiMonitorCoordinator(DataUpdateCoordinator):
             data[KEY_UNDERVOLTAGE_OCCURRED] = None
             data[KEY_THERMAL_THROTTLE_OCCURRED] = None
             data[KEY_CPU_FREQ_VCGENCMD] = None
+            data[KEY_POWER_VOLTS_IN] = None
+            data[KEY_POWER_AMPS_IN] = None
+            data[KEY_POWER_WATTS] = None
 
         return data
 
@@ -258,6 +264,18 @@ class RpiMonitorCoordinator(DataUpdateCoordinator):
 
         data[KEY_CPU_FREQ_VCGENCMD] = self._read_clock_arm()
 
+        pmic = self._read_pmic_adc()
+        if pmic:
+            volts = pmic.get("EXT5V_V")
+            amps = pmic.get("EXT5V_I")
+            data[KEY_POWER_VOLTS_IN] = round(volts, 3) if volts is not None else None
+            data[KEY_POWER_AMPS_IN] = round(amps, 3) if amps is not None else None
+            data[KEY_POWER_WATTS] = round(volts * amps, 2) if (volts is not None and amps is not None) else None
+        else:
+            data[KEY_POWER_VOLTS_IN] = None
+            data[KEY_POWER_AMPS_IN] = None
+            data[KEY_POWER_WATTS] = None
+
     def _read_throttle_bits(self) -> int | None:
         try:
             result = subprocess.run(
@@ -273,6 +291,28 @@ class RpiMonitorCoordinator(DataUpdateCoordinator):
         except (subprocess.TimeoutExpired, ValueError, OSError):
             pass
         return None
+
+    def _read_pmic_adc(self) -> dict[str, float] | None:
+        """Read PMIC ADC values via vcgencmd (Raspberry Pi 5 only)."""
+        try:
+            result = subprocess.run(
+                [self._vcgencmd_path, "pmic_read_adc"],
+                capture_output=True,
+                text=True,
+                timeout=3,
+                check=False,
+            )
+            readings: dict[str, float] = {}
+            for line in result.stdout.splitlines():
+                parts = line.split()
+                if len(parts) >= 2:
+                    try:
+                        readings[parts[0]] = float(parts[1])
+                    except ValueError:
+                        pass
+            return readings if readings else None
+        except (subprocess.TimeoutExpired, OSError):
+            return None
 
     def _read_clock_arm(self) -> float | None:
         try:

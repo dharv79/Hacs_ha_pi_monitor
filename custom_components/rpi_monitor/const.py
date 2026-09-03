@@ -47,6 +47,10 @@ KEY_UPTIME_SECONDS = "uptime_seconds"
 KEY_PROCESS_COUNT = "process_count"
 KEY_BOOT_TIME = "boot_time"
 
+KEY_POWER_VOLTS_IN = "power_volts_in"
+KEY_POWER_AMPS_IN = "power_amps_in"
+KEY_POWER_WATTS = "power_watts"
+
 KEY_THROTTLE_ACTIVE = "throttle_active"
 KEY_UNDERVOLTAGE_NOW = "undervoltage_now"
 KEY_UNDERVOLTAGE_OCCURRED = "undervoltage_occurred"

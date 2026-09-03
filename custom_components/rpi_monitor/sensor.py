@@ -15,8 +15,11 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
     UnitOfDataRate,
+    UnitOfElectricCurrent,
+    UnitOfElectricPotential,
     UnitOfFrequency,
     UnitOfInformation,
+    UnitOfPower,
     UnitOfTemperature,
     UnitOfTime,
 )
@@ -45,6 +48,9 @@ from .const import (
     KEY_NET_BYTES_SENT,
     KEY_NET_RATE_RECV,
     KEY_NET_RATE_SEND,
+    KEY_POWER_AMPS_IN,
+    KEY_POWER_VOLTS_IN,
+    KEY_POWER_WATTS,
     KEY_PROCESS_COUNT,
     KEY_RAM_AVAILABLE_MB,
     KEY_RAM_TOTAL_MB,
@@ -267,6 +273,34 @@ SENSOR_DESCRIPTIONS: tuple[RpiSensorEntityDescription, ...] = (
         name="Last Boot",
         device_class=SensorDeviceClass.TIMESTAMP,
         icon="mdi:restart",
+    ),
+    # --- Power (Raspberry Pi 5 PMIC via vcgencmd pmic_read_adc) ---
+    RpiSensorEntityDescription(
+        key=KEY_POWER_VOLTS_IN,
+        name="Input Voltage",
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        device_class=SensorDeviceClass.VOLTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:lightning-bolt",
+        vcgencmd_required=True,
+    ),
+    RpiSensorEntityDescription(
+        key=KEY_POWER_AMPS_IN,
+        name="Input Current",
+        native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
+        device_class=SensorDeviceClass.CURRENT,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:current-dc",
+        vcgencmd_required=True,
+    ),
+    RpiSensorEntityDescription(
+        key=KEY_POWER_WATTS,
+        name="Power Consumption",
+        native_unit_of_measurement=UnitOfPower.WATT,
+        device_class=SensorDeviceClass.POWER,
+        state_class=SensorStateClass.MEASUREMENT,
+        icon="mdi:flash",
+        vcgencmd_required=True,
     ),
     # --- RPi-specific (vcgencmd) ---
     RpiSensorEntityDescription(
